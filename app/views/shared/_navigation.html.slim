@@ -1,0 +1,10 @@
+.masthead.clearfix
+  .inner
+    h3.masthead-brand Rate predictor
+    nav.nav.nav-masthead
+      = link_to 'Home', root_path, class: 'nav-link'
+      - if user_signed_in?
+        = link_to 'Logout', destroy_user_session_path, class: 'nav-link'
+      - else
+        = link_to 'Log in', new_user_session_path, class: 'nav-link'
+        = link_to 'Sign up', new_user_registration_path, class: 'nav-link'

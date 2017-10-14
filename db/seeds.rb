@@ -20,9 +20,14 @@ currencies = [
   { code: "HUF", name: "Hungarian Forint" },
   { code: "IDR", name: "Indonesian Rupiah" },
   { code: "CHF", name: "Swiss Francs" },
-  { code: "GBP", name: "United Kingdom Pound" }
+  { code: "GBP", name: "United Kingdom Pound" },
+  { code: "USD", name: "Dollar" }
 ]
 
 currencies.each do |row|
   Currency.find_or_create_by(row)
+end
+
+((Date.today - 25.weeks)..Date.today).each do |date|
+  ExchangeRates::Importer.new(date).import!
 end

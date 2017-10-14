@@ -40,7 +40,11 @@ gem 'bootstrap', '~> 4.0.0.beta'
 
 gem 'rest-client'
 
+# money fields in database
 gem 'money-rails'
+
+# ruby fast artificial neural network
+gem 'ruby-fann'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

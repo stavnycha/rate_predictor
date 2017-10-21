@@ -5,6 +5,11 @@ Rails.application.routes.draw do
     resources :predictions, only: [ :index, :create, :show, :destroy ]
   end
 
-  root to: 'pages#home'
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  authenticated :user do
+    root to: 'predictions#index'
+  end
+
+  unauthenticated do
+    root to: 'pages#home'
+  end
 end

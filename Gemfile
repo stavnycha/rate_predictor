@@ -43,8 +43,9 @@ gem 'rest-client'
 # money fields in database
 gem 'money-rails'
 
-# ruby fast artificial neural network
-gem 'ruby-fann'
+gem 'rb-libsvm'
+
+gem 'sidekiq'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

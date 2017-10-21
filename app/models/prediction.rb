@@ -21,4 +21,12 @@ class Prediction < ApplicationRecord
 
   validates :weeks, presence: true,
             numericality: { less_than_or_equal_to: 25 }
+
+  after_commit :calculate_prediction, on: :create
+
+  private
+
+  def calculate_prediction
+    PredictionWorker.perform_async(id)
+  end
 end

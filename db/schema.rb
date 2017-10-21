@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171013184542) do
+ActiveRecord::Schema.define(version: 20171021050127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,17 @@ ActiveRecord::Schema.define(version: 20171013184542) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["base_currency_id"], name: "index_exchange_rates_on_base_currency_id"
+  end
+
+  create_table "predictions", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "status", default: 0
+    t.date "date"
+    t.jsonb "rate_history", default: {}
+    t.jsonb "rate_prediction", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_predictions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

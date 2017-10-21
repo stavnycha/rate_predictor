@@ -33,12 +33,18 @@ ActiveRecord::Schema.define(version: 20171021050127) do
 
   create_table "predictions", force: :cascade do |t|
     t.bigint "user_id"
+    t.bigint "from_currency_id"
+    t.bigint "to_currency_id"
+    t.bigint "amount_fractional"
+    t.integer "weeks", default: 15
     t.integer "status", default: 0
     t.date "date"
     t.jsonb "rate_history", default: {}
     t.jsonb "rate_prediction", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["from_currency_id"], name: "index_predictions_on_from_currency_id"
+    t.index ["to_currency_id"], name: "index_predictions_on_to_currency_id"
     t.index ["user_id"], name: "index_predictions_on_user_id"
   end
 

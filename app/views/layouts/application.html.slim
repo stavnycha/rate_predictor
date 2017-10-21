@@ -9,4 +9,7 @@ html
   body
     = render partial: 'shared/navigation'
     .container
+      - flash.each do |name, msg|
+        .alert.alert-info= msg
+
       = yield

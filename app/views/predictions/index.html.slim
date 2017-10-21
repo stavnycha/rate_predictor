@@ -1,0 +1,21 @@
+= render partial: 'form', locals: { prediction: @prediction }
+
+= paginate @predictions
+
+table.table
+  thead
+    th Date
+    th Base currency
+    th Target currency
+    th Amount
+    th Status
+  tbody
+    - @predictions.each do |prediction|
+      tr
+        td= link_to prediction.created_at, prediction_path(prediction)
+        td= prediction.from_currency.code
+        td= prediction.to_currency.code
+        td= prediction.amount
+        td= prediction.status.humanize
+
+= paginate @predictions

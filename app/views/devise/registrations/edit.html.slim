@@ -3,7 +3,7 @@
     h2.form-signin-heading
       | Edit #{resource_name.to_s.humanize}
     = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f|
-      = devise_error_messages!
+      = render partial: 'shared/errors', locals: { resource: resource }
       .form-group
         = f.label :email
         = f.email_field :email, autofocus: true, class: 'form-control'

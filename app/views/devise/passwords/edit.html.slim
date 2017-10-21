@@ -2,7 +2,7 @@
   .authentication-form
     h2.form-signin-heading Change your password
     = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
-      = devise_error_messages!
+      = render partial: 'shared/errors', locals: { resource: resource }
       = f.hidden_field :reset_password_token
       .form-group
         = f.label :password, "New password"

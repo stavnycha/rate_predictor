@@ -31,3 +31,14 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    attributes:
+      prediction:
+        to_currency: Target currency
+        from_currency: Base currency
+    errors:
+      models:
+        prediction:
+          attributes:
+            to_currency:
+              same_as_base: should not equal base currency

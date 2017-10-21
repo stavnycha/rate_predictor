@@ -1,9 +1,11 @@
 module ExchangeRates
   class Importer
-    attr_reader :date
+    attr_reader :date, :base_currency
 
-    def initialize(date = Date.today)
+    def initialize(date = Date.today,
+                   base_currency = default_base_currency)
       @date = date
+      @base_currency = base_currency
     end
 
     def import!
@@ -18,13 +20,13 @@ module ExchangeRates
     private
 
     def parsed_rates
-      @parsed_rates ||= request_rate['rates'] || []
+      @parsed_rates ||= request_rate['rates'] || {}
     end
 
     def request_rate
       begin
         JSON.parse(RestClient.get(request_url))
-      rescue StandardError
+      rescue StandardError => e
         {}
       end
     end
@@ -33,8 +35,9 @@ module ExchangeRates
       "http://api.fixer.io/#{date}?base=#{base_currency.code}"
     end
 
-    def base_currency
-      @base_currency ||= Currency.find_by(code: 'USD')
+    def default_base_currency
+      @default_base_currency ||=
+        Currency.find_by(code: 'USD')
     end
   end
 end

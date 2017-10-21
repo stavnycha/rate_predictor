@@ -29,6 +29,8 @@ currencies.each do |row|
 end
 
 ((Date.today - 25.weeks)..Date.today).each do |date|
-  ExchangeRates::Importer.new(date).import!
-  sleep 1
+  Currency.all.each do |currency|
+    ExchangeRates::Importer.new(date, currency).import!
+    sleep 0.5
+  end
 end

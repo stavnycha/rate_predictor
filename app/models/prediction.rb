@@ -16,8 +16,9 @@ class Prediction < ApplicationRecord
   store_accessor :rate_history
   store_accessor :rate_prediction
 
-  monetize :amount_fractional, as: :amount
+  monetize :amount_fractional, as: :amount,
            with_model_currency: :from_currency
 
-  validates :weeks, numericality: { less_than_or_equal_to: 25 }
+  validates :weeks, presence: true,
+            numericality: { less_than_or_equal_to: 25 }
 end

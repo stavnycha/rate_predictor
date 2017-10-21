@@ -15,8 +15,9 @@ class Prediction
           rate_history: rates_data,
           rate_prediction: predicted_rates
         )
-      rescue
+      rescue StandardError => e
         predictor.update(status: :failed)
+        raise e if Rails.env.development?
       end
     end
 
@@ -37,7 +38,7 @@ class Prediction
         model = Libsvm::Model.train(problem, parameter)
 
         Hash[prediction_dates.map do |date|
-          [date, model.predict(Libsvm::Node.features(transform_date(date))]
+          [date, model.predict(Libsvm::Node.features([transform_date(date)]))]
         end]
       end
     end
@@ -71,14 +72,14 @@ class Prediction
     end
 
     def rates_data
-      @rates_data ||= Hash[exchange_rates.each do |r|
+      @rates_data ||= Hash[exchange_rates.map do |r|
         [r.date, r.rates[to_currency]]
       end].compact
     end
 
     def exchange_rates
       ExchangeRate.where('date <= ?', from_date)
-        .where(base_currency: predictor.base_currency)
+        .where(base_currency: predictor.from_currency)
     end
 
     def to_currency

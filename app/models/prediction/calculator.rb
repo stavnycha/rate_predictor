@@ -35,14 +35,13 @@ class Prediction
 
     def predicted_rates
       @predicted_rates ||= begin
-        parameter = Libsvm::SvmParameter.new.tap do |config|
-          config.cache_size = 1 # in megabytes
-          config.eps = 1
-          config.c = 5000
-          # [:LINEAR, :POLY, :RBF, :SIGMOID, :PRECOMPUTED]
-          config.kernel_type = Libsvm::KernelType::RBF
-          config.gamma = 0.002
-        end
+        parameter = Libsvm::SvmParameter.new
+        parameter.cache_size = 1 # in megabytes
+        parameter.eps = 1
+        parameter.c = 100000
+        # [:LINEAR, :POLY, :RBF, :SIGMOID, :PRECOMPUTED]
+        parameter.kernel_type = Libsvm::KernelType::RBF
+        parameter.gamma = 0.01
 
         prediction_dates.map do |date|
           x_data = (rates.size - lag).times.map do |i|
@@ -57,7 +56,8 @@ class Prediction
           problem.set_examples(y_data, x_data)
 
           model = Libsvm::Model.train(problem, parameter)
-          predicted = model.predict(rates[-5..-1].to_example)
+
+          predicted = model.predict(rates[-lag..-1].to_example)
 
           rates.push(predicted)
           formatted_forecast(date, predicted / fractional_coef)
@@ -75,11 +75,7 @@ class Prediction
     end
 
     def lag
-      5
-    end
-
-    def fractional_coef
-      1000000.0
+      [ 5, rates.size - 1 ].min
     end
 
     def prediction_dates
@@ -121,6 +117,7 @@ class Prediction
     def exchange_rates
       ExchangeRate.where(date: historical_dates)
         .where(base_currency: predictor.from_currency)
+        .order(:date)
     end
 
     def current_rate
@@ -137,6 +134,10 @@ class Prediction
 
     def historical_dates
       (from_date..Date.today).step(7).to_a
+    end
+
+    def fractional_coef
+      1000000
     end
   end
 end

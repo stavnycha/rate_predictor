@@ -16,9 +16,10 @@ class Prediction
 
     def ranked_rates
       RANKS_AMOUNT.times.to_a.each do |rank|
-        unranked_rates.max_by do |row|
+        best = unranked_rates.max_by do |row|
           row['difference']
-        end['rank'] = rank + 1
+        end
+        best['rank'] = rank + 1 if best
       end
       rate_prediction
     end

@@ -9,6 +9,7 @@ table.table
     th Target currency
     th Amount
     th Status
+    th Actions
   tbody
     - @predictions.each do |prediction|
       tr
@@ -17,5 +18,7 @@ table.table
         td= prediction.to_currency.code
         td= prediction.amount
         td= prediction.status.humanize
+        td
+          = link_to 'Remove', prediction_path(prediction), method: :delete, data: { confirm: 'Are you sure you want to remove this forecast?' }, class: 'btn btn-outline-danger btn-sm'
 
 = paginate @predictions

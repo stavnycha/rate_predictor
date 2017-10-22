@@ -28,6 +28,7 @@ module ExchangeRates
         JSON.parse(RestClient.get(request_url))
       rescue StandardError => e
         if try < 7
+          # in case of 'too many requests' exception
           sleep 0.5
           request_rate(try + 1)
         else

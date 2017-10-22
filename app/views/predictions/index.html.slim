@@ -13,7 +13,7 @@ table.table
   tbody
     - @predictions.each do |prediction|
       tr
-        td= link_to prediction.created_at, prediction_path(prediction)
+        td= link_to prediction.created_at.to_date, prediction_path(prediction)
         td= prediction.from_currency.code
         td= prediction.to_currency.code
         td= prediction.amount

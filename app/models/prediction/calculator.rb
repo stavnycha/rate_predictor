@@ -69,14 +69,14 @@ class Prediction
     end
 
     def fractional_coef
-      10000.0
+      1000000.0
     end
 
     def prediction_dates
       @prediction_dates ||= begin
         from = Date.today + 1.day
         to = from + predictor.weeks.weeks
-        (from..to).to_a
+        (from..to).step(7).to_a
       end
     end
 
@@ -105,7 +105,7 @@ class Prediction
     end
 
     def exchange_rates
-      ExchangeRate.where('date > ?', from_date)
+      ExchangeRate.where(date: historical_dates)
         .where(base_currency: predictor.from_currency)
     end
 
@@ -118,7 +118,7 @@ class Prediction
     end
 
     def historical_dates
-      from_date..Date.today
+      (from_date..Date.today).step(7).to_a
     end
   end
 end

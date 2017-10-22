@@ -22,7 +22,7 @@ class Prediction < ApplicationRecord
   delegate :code, to: :from_currency, prefix: true, allow_nil: true
 
   validates :weeks, presence: true,
-            numericality: { less_than_or_equal_to: 25 }
+            numericality: { less_than_or_equal_to: 250, greater_than: 0 }
 
   after_commit :calculate_prediction, on: :create
 
@@ -30,13 +30,13 @@ class Prediction < ApplicationRecord
 
   private
 
-    def calculate_prediction
-      PredictionWorker.perform_async(id)
-    end
+  def calculate_prediction
+    PredictionWorker.perform_async(id)
+  end
 
-    def validate_currencies
-      if from_currency == to_currency
-        errors.add :to_currency, :same_as_base
-      end
+  def validate_currencies
+    if from_currency == to_currency
+      errors.add :to_currency, :same_as_base
     end
+  end
 end

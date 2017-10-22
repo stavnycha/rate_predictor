@@ -5,7 +5,7 @@ describe ExchangeRates::Importer do
   let(:base) { create(:currency) }
   let(:importer) { described_class.new(date, base) }
 
-  describe '#import' do
+  describe '#import!' do
     let(:importing) do
       VCR.use_cassette('exchange_rates') do
         importer.import!

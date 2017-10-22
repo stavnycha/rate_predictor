@@ -80,8 +80,8 @@ class Prediction
 
     def prediction_dates
       @prediction_dates ||= begin
-        from = Date.today + 1.day
-        to = from + predictor.weeks.weeks
+        from = Date.today + 1.week
+        to = from + (predictor.weeks - 1).weeks
         (from..to).step(7).to_a
       end
     end
@@ -115,9 +115,10 @@ class Prediction
     end
 
     def exchange_rates
-      ExchangeRate.where(date: historical_dates)
-        .where(base_currency: predictor.from_currency)
-        .order(:date)
+      ExchangeRate.where(
+        date: historical_dates,
+        base_currency: predictor.from_currency
+      ).order(:date)
     end
 
     def current_rate

@@ -23,11 +23,16 @@ module ExchangeRates
       @parsed_rates ||= request_rate['rates'] || {}
     end
 
-    def request_rate
+    def request_rate(try = 1)
       begin
         JSON.parse(RestClient.get(request_url))
       rescue StandardError => e
-        {}
+        if try < 7
+          sleep 0.5
+          request_rate(try + 1)
+        else
+          {}
+        end
       end
     end
 

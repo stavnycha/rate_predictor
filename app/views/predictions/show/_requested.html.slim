@@ -1,0 +1,24 @@
+p= fa_icon 'spinner spin', text: 'Calculating'
+
+
+javascript:
+  var status = '#{@prediction.status}';
+  var pending_statuses = [ 'requested' ]
+
+  function ping_status(){
+    $.ajax({
+      url: '/api/v1/predictions/#{@prediction.id}',
+      dataType: "json",
+      success: function (response) {
+        if (pending_statuses.indexOf(response.prediction.status) > -1) {
+          setTimeout(ping_status, 1000);
+        } else {
+          location.reload();
+        }
+      }
+    })
+  };
+
+  if (pending_statuses.indexOf(status) > -1) {
+    ping_status();
+  }

@@ -12,4 +12,10 @@ Rails.application.routes.draw do
   unauthenticated do
     root to: 'pages#home'
   end
+
+  namespace :api do
+    namespace :v1 do
+      resources :predictions, only: :show
+    end
+  end
 end

@@ -27,10 +27,3 @@ currencies = [
 currencies.each do |row|
   Currency.find_or_create_by(row)
 end
-
-((Date.today - 25.weeks)..Date.today).each do |date|
-  Currency.all.each do |currency|
-    ExchangeRates::Importer.new(date, currency).import!
-    sleep 0.5
-  end
-end

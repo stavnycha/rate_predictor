@@ -30,13 +30,13 @@ class Prediction < ApplicationRecord
 
   private
 
-  def calculate_prediction
-    PredictionWorker.perform_async(id)
-  end
-
-  def validate_currencies
-    if from_currency == to_currency
-      errors.add :to_currency, :same_as_base
+    def calculate_prediction
+      PredictionWorker.perform_async(id)
     end
-  end
+
+    def validate_currencies
+      if from_currency == to_currency
+        errors.add :to_currency, :same_as_base
+      end
+    end
 end

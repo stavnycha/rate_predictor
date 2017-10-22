@@ -1,15 +1,23 @@
 = form_for prediction do |f|
   = render partial: 'shared/errors', locals: { resource: prediction }
-  .form-group
-    = f.label :from_currency_id, 'From'
-    = f.collection_select :from_currency_id, Currency.all, :id, :code, {}, class: 'form-control'
-  .form-group
-    = f.label :to_currency_id, 'To'
-    = f.collection_select :to_currency_id, Currency.all, :id, :code, {}, class: 'form-control'
-  .form-group
-    = f.label :amount
-    = f.number_field :amount, class: 'form-control'
-  .form-group
-    = f.label :weeks, 'Maximum weeks to wait'
-    = f.number_field :weeks, class: 'form-control'
-  = f.submit 'Calculate', class: 'btn btn-primary'
+  .row
+    .col-sm
+      .form-group
+        = f.label :from_currency_id, 'From'
+        = f.collection_select :from_currency_id, Currency.all, :id, :code, {}, class: 'form-control'
+    .col-sm
+      .form-group
+        = f.label :to_currency_id, 'To'
+        = f.collection_select :to_currency_id, Currency.all, :id, :code, {}, class: 'form-control'
+  .row
+    .col-sm
+      .form-group
+        = f.label :amount
+        = f.number_field :amount, class: 'form-control'
+    .col-sm
+      .form-group
+        = f.label :weeks, 'Maximum weeks to wait'
+        = f.number_field :weeks, step: 1, max: 25, class: 'form-control'
+  .row
+    .col-12
+      = f.submit 'Calculate', class: 'btn btn-primary'

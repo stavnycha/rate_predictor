@@ -10,6 +10,7 @@ class Prediction
 
     def calculate!
       begin
+        fetch_history!
         predictor.update(
           status: :processed,
           rate_history: rates_data,
@@ -23,24 +24,52 @@ class Prediction
 
     private
 
+    def fetch_history!
+      historical_dates.each do |date|
+        ExchangeRates::Importer.new(
+          date, predictor.from_currency
+        ).import!
+      end
+    end
+
     def predicted_rates
       @predicted_rates ||= begin
-        problem = Libsvm::Problem.new
-        parameter = Libsvm::SvmParameter.new
-
-        parameter.cache_size = 1 # in megabytes
-
-        parameter.eps = 0.001
-        parameter.c = 10
-
-        examples = dates.map { |d| Libsvm::Node.features([transform_date(d)]) }
-        problem.set_examples(rates, examples)
-        model = Libsvm::Model.train(problem, parameter)
+        parameter = Libsvm::SvmParameter.new.tap do |config|
+          config.cache_size = 1 # in megabytes
+          config.eps = 1
+          config.c = 5000
+          # [:LINEAR, :POLY, :RBF, :SIGMOID, :PRECOMPUTED]
+          config.kernel_type = Libsvm::KernelType::RBF
+          config.gamma = 0.002
+        end
 
         Hash[prediction_dates.map do |date|
-          [date, model.predict(Libsvm::Node.features([transform_date(date)]))]
+          x_data = (rates.size - lag).times.map do |i|
+            lag.times.to_a.map do |j|
+              rates[i + j]
+            end.to_example
+          end
+
+          y_data = rates[lag..-1]
+
+          problem = Libsvm::Problem.new
+          problem.set_examples(y_data, x_data)
+
+          model = Libsvm::Model.train(problem, parameter)
+          predicted = model.predict(rates[-5..-1].to_example)
+
+          rates.push(predicted)
+          [date, predicted / fractional_coef]
         end]
       end
+    end
+
+    def lag
+      5
+    end
+
+    def fractional_coef
+      10000.0
     end
 
     def prediction_dates
@@ -49,10 +78,6 @@ class Prediction
         to = from + predictor.weeks.weeks
         (from..to).to_a
       end
-    end
-
-    def transform_date(date)
-      (date - min_date).to_i
     end
 
     def start_date
@@ -64,7 +89,9 @@ class Prediction
     end
 
     def rates
-      @rates ||= rates_data.values
+      @rates ||= rates_data.values.map do |r|
+        r * fractional_coef
+      end
     end
 
     def min_date
@@ -78,7 +105,7 @@ class Prediction
     end
 
     def exchange_rates
-      ExchangeRate.where('date <= ?', from_date)
+      ExchangeRate.where('date > ?', from_date)
         .where(base_currency: predictor.from_currency)
     end
 
@@ -89,6 +116,9 @@ class Prediction
     def from_date
       Date.today - predictor.weeks.weeks
     end
+
+    def historical_dates
+      from_date..Date.today
+    end
   end
 end
-

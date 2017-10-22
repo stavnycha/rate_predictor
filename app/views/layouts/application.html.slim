@@ -6,6 +6,9 @@ html
     = csrf_meta_tags
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+
+    = stylesheet_link_tag    '//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css'
+    = javascript_include_tag '//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js'
   body
     = render partial: 'shared/navigation'
     .container

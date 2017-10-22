@@ -16,6 +16,7 @@ class Prediction
           rate_history: rates_data,
           rate_prediction: predicted_rates
         )
+        predictor.set_ranks!
       rescue StandardError => e
         predictor.update(status: :failed)
         raise e if Rails.env.development?
@@ -43,7 +44,7 @@ class Prediction
           config.gamma = 0.002
         end
 
-        Hash[prediction_dates.map do |date|
+        prediction_dates.map do |date|
           x_data = (rates.size - lag).times.map do |i|
             lag.times.to_a.map do |j|
               rates[i + j]
@@ -59,9 +60,18 @@ class Prediction
           predicted = model.predict(rates[-5..-1].to_example)
 
           rates.push(predicted)
-          [date, predicted / fractional_coef]
-        end]
+          formatted_forecast(date, predicted / fractional_coef)
+        end
       end
+    end
+
+    def formatted_forecast(date, predicted_rate)
+      {
+        date: date,
+        rate: predicted_rate,
+        converted_amount: (predicted_rate * amount).to_f,
+        difference: (predicted_rate * amount).to_f - (current_rate * amount).to_f
+      }
     end
 
     def lag
@@ -78,6 +88,10 @@ class Prediction
         to = from + predictor.weeks.weeks
         (from..to).step(7).to_a
       end
+    end
+
+    def amount
+      predictor.amount
     end
 
     def start_date
@@ -107,6 +121,10 @@ class Prediction
     def exchange_rates
       ExchangeRate.where(date: historical_dates)
         .where(base_currency: predictor.from_currency)
+    end
+
+    def current_rate
+      @current_rate ||= rates_data[predictor.created_at.to_date]
     end
 
     def to_currency

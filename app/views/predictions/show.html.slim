@@ -1,11 +1,13 @@
 h1
   | Currency exchange rate forecast
 h5
-  = @prediction.created_at.strftime('%D')
-h5
-  = @prediction.from_currency.code
-  | ->
-  = @prediction.to_currency.code
+  small
+    p
+      = @prediction.created_at.to_date
+    p
+      = @prediction.from_currency.code
+      | -
+      = @prediction.to_currency.code
 
 .row
   .col= render partial: "predictions/show/#{@prediction.status}", locals: { prediction: @prediction }

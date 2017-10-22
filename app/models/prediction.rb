@@ -19,14 +19,16 @@ class Prediction < ApplicationRecord
   monetize :amount_fractional, as: :amount,
            with_model_currency: :from_currency_code
 
-  delegate :code, to: :from_currency, prefix: true, allow_nil: true
-
   validates :weeks, presence: true,
             numericality: { less_than_or_equal_to: 250, greater_than: 0 }
 
   after_commit :calculate_prediction, on: :create
 
   validate :validate_currencies
+
+  delegate :code, to: :from_currency, prefix: true, allow_nil: true
+  delegate :calculate!, to: :calculator
+  delegate :set_ranks!, to: :rank_setter
 
   private
 
@@ -38,5 +40,13 @@ class Prediction < ApplicationRecord
     if from_currency == to_currency
       errors.add :to_currency, :same_as_base
     end
+  end
+
+  def calculator
+    @calculator ||= Prediction::Calculator.new(self)
+  end
+
+  def rank_setter
+    @rank_setter ||= Prediction::RankSetter.new(self)
   end
 end

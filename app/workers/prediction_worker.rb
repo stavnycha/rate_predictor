@@ -5,6 +5,6 @@ class PredictionWorker
     prediction = Prediction.find(prediction_id)
     return if prediction.processed?
 
-    Prediction::Calculator.new(prediction).calculate!
+    prediction.calculate!
   end
 end

@@ -1,46 +1,55 @@
 #chart
 
-table.table.table-sm
-  thead.thead-default
-    tr
-      th{colspan=3} History rates
-  thead
-    tr
-      th Year
-      th Week
-      th Exchange rate
-  tbody
-    - prediction.rate_history.each do |date, rate|
-      tr
-        td
-          = (date = date.to_date).year
-        td
-          = date.strftime('%W')
-        td= rate
+.row
+  .col
+    table.table.table-sm
+      thead.thead-default
+        tr
+          th{colspan=3} History rates
+      thead
+        tr
+          th Year
+          th Week
+          th Exchange rate
+      tbody
+        - prediction.rate_history.each do |date, rate|
+          tr
+            td= (date = date.to_date).year
+            td= date.strftime('%W')
+            td= rate
 
-table.table.table-sm
-  thead.thead-default
-    tr
-      th{colspan=5} Predicted rates
-  thead
-    tr
-      th Year
-      th Week
-      th Exchange rate
-      th Currency exchange profit
-  tbody
-    - prediction.rate_prediction.each do |date, rate|
-      tr
-        td
-          = (date = date.to_date).year
-        td
-          = date.strftime('%W')
-        td= rate
-        td= prediction.amount * rate
+  .col
+    table.table.table-sm
+      thead.thead-default
+        tr
+          th{colspan=6} Predicted rates
+      thead
+        tr
+          th Year
+          th Week
+          th Exchange rate
+          th Amount received
+          th Profit/Loss
+          th Rank
+      tbody
+        - prediction.rate_prediction.each do |row|
+          tr class=('table-success' if row['rank'])
+            td= (date = row['date'].to_date).year
+            td= date.strftime('%W')
+            td= row['rate']
+            td= amount_with_currency(row['converted_amount'], prediction.to_currency)
+            td
+              = amount_with_currency(row['difference'], prediction.to_currency)
+              - if row['difference'] < 0
+                = fa_icon 'sort-desc'
+              - else
+                = fa_icon 'sort-asc'
+            td= row['rank']
+
 
 javascript:
   PredictionChart(
     '#chart',
     #{raw prediction.rate_history.values.to_json},
-    #{raw prediction.rate_prediction.values.to_json}
+    #{raw prediction.rate_prediction.map{ |r| r['rate'] }.to_json}
   );

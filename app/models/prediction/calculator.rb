@@ -19,7 +19,7 @@ class Prediction
         predictor.set_ranks!
       rescue StandardError => e
         predictor.update(status: :failed)
-        raise e if Rails.env.development?
+        raise e if Rails.env.development? || Rails.env.test?
       end
     end
 
@@ -33,34 +33,14 @@ class Prediction
       end
     end
 
+    def model
+      @model ||= Prediction::Models::Svm.new(rates, predictor.weeks)
+    end
+
     def predicted_rates
       @predicted_rates ||= begin
-        parameter = Libsvm::SvmParameter.new
-        parameter.cache_size = 1 # in megabytes
-        parameter.eps = 1
-        parameter.c = 100000
-        # [:LINEAR, :POLY, :RBF, :SIGMOID, :PRECOMPUTED]
-        parameter.kernel_type = Libsvm::KernelType::RBF
-        parameter.gamma = 0.01
-
-        prediction_dates.map do |date|
-          x_data = (rates.size - lag).times.map do |i|
-            lag.times.to_a.map do |j|
-              rates[i + j]
-            end.to_example
-          end
-
-          y_data = rates[lag..-1]
-
-          problem = Libsvm::Problem.new
-          problem.set_examples(y_data, x_data)
-
-          model = Libsvm::Model.train(problem, parameter)
-
-          predicted = model.predict(rates[-lag..-1].to_example)
-
-          rates.push(predicted)
-          formatted_forecast(date, predicted / fractional_coef)
+        model.predicted.map do |week, rate|
+          formatted_forecast(Date.today + week.weeks, rate)
         end
       end
     end
@@ -74,38 +54,12 @@ class Prediction
       }
     end
 
-    def lag
-      [ 5, rates.size - 1 ].min
-    end
-
-    def prediction_dates
-      @prediction_dates ||= begin
-        from = Date.today + 1.week
-        to = from + (predictor.weeks - 1).weeks
-        (from..to).step(7).to_a
-      end
-    end
-
     def amount
       predictor.amount
     end
 
-    def start_date
-      predictor.created_at
-    end
-
-    def dates
-      @dates ||= rates_data.keys
-    end
-
     def rates
-      @rates ||= rates_data.values.map do |r|
-        r * fractional_coef
-      end
-    end
-
-    def min_date
-      @min_date ||= dates.min
+      @rates ||= rates_data.values
     end
 
     def rates_data
@@ -129,16 +83,12 @@ class Prediction
       predictor.to_currency.code
     end
 
-    def from_date
-      Date.today - predictor.weeks.weeks
-    end
-
     def historical_dates
       (from_date..Date.today).step(7).to_a
     end
 
-    def fractional_coef
-      1000000
+    def from_date
+      Date.today - predictor.weeks.weeks
     end
   end
 end

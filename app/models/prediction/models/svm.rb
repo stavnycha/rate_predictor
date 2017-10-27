@@ -1,3 +1,6 @@
+#
+# https://machinelearningmastery.com/time-series-forecasting-supervised-learning/
+#
 class Prediction
   module Models
     class Svm
@@ -39,21 +42,29 @@ class Prediction
         @parameter ||= begin
           param = Libsvm::SvmParameter.new
           param.cache_size = 1 # in megabytes
-          param.eps = 1
-          param.c = 100000
+          param.eps = 0.00001
+          param.c = 5000
+          # regression type
+          param.svm_type = Libsvm::SvmType::NU_SVR
+          param.nu = 0.2
           # [:LINEAR, :POLY, :RBF, :SIGMOID, :PRECOMPUTED]
+          #
+          # RBF has proven in many studies to be best pick
+          # for financial forecast
+          #
           param.kernel_type = Libsvm::KernelType::RBF
-          param.gamma = 0.01
+          param.gamma = 0.0001
           param
         end
       end
 
+      # moving window
       def lag
         [ LAG, prediction_count.size - 1 ].min
       end
 
       def fractional_coef
-        1000000
+        10000
       end
     end
   end

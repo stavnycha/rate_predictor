@@ -40,9 +40,13 @@ class Prediction
     def predicted_rates
       @predicted_rates ||= begin
         model.predicted.map do |week, rate|
-          formatted_forecast(Date.today + week.weeks, rate)
+          formatted_forecast(prediction_date + week.weeks, rate)
         end
       end
+    end
+
+    def prediction_date
+      predictor.created_at.to_date
     end
 
     def formatted_forecast(date, predicted_rate)
@@ -76,7 +80,7 @@ class Prediction
     end
 
     def current_rate
-      @current_rate ||= rates_data[predictor.created_at.to_date]
+      @current_rate ||= rates_data[to_date]
     end
 
     def to_currency
@@ -84,11 +88,15 @@ class Prediction
     end
 
     def historical_dates
-      (from_date..Date.today).step(7).to_a
+      (from_date..to_date).step(7).to_a
+    end
+
+    def to_date
+      predictor.created_at.to_date
     end
 
     def from_date
-      Date.today - predictor.weeks.weeks
+      to_date - predictor.weeks.weeks
     end
   end
 end

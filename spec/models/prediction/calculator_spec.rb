@@ -69,7 +69,7 @@ describe Prediction::Calculator do
     end
 
     it 'sets ranks to forecasted rates' do
-      ranks = prediction.rate_prediction.map{ |row| row['rank'] }
+      ranks = prediction.rate_prediction.map { |row| row['rank'] }
       expect(ranks.compact.size).to eq(Prediction::RankSetter::RANKS_AMOUNT)
     end
   end

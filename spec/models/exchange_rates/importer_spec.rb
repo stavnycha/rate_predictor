@@ -19,7 +19,7 @@ describe ExchangeRates::Importer do
       end
 
       it 'creates new record of exchange rate in db' do
-        expect{importing}.to change{ExchangeRate.count}.from(0).to(1)
+        expect { importing }.to change { ExchangeRate.count }.from(0).to(1)
       end
     end
 
@@ -34,7 +34,7 @@ describe ExchangeRates::Importer do
       end
 
       it 'doesnt create new records of exchange rates' do
-        expect{importing}.not_to change{ExchangeRate.count}
+        expect { importing }.not_to change { ExchangeRate.count }
       end
     end
   end

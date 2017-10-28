@@ -4,14 +4,16 @@
 class Prediction
   module Models
     class Svm
-      attr_reader :time_series, :prediction_count
+      attr_reader :prediction_count
 
       LAG = 5
+      EPS = 0.0001
+      C = 50000
+      NU = 0.2
+      GAMMA = 0.0001
 
       def initialize(time_series, prediction_count)
-        @time_series = time_series.map do |item|
-          item * fractional_coef
-        end
+        @time_series = time_series
         @prediction_count = prediction_count
       end
 
@@ -42,19 +44,25 @@ class Prediction
         @parameter ||= begin
           param = Libsvm::SvmParameter.new
           param.cache_size = 1 # in megabytes
-          param.eps = 0.00001
-          param.c = 5000
+          param.eps = EPS
+          param.c = C
           # regression type
           param.svm_type = Libsvm::SvmType::NU_SVR
-          param.nu = 0.2
+          param.nu = NU
           # [:LINEAR, :POLY, :RBF, :SIGMOID, :PRECOMPUTED]
           #
           # RBF has proven in many studies to be best pick
           # for financial forecast
           #
           param.kernel_type = Libsvm::KernelType::RBF
-          param.gamma = 0.0001
+          param.gamma = GAMMA
           param
+        end
+      end
+
+      def time_series
+        @tuned_time_serier ||= @time_series.map do |item|
+          item * fractional_coef
         end
       end
 
@@ -63,8 +71,11 @@ class Prediction
         [ LAG, prediction_count.size - 1 ].min
       end
 
+      # some experimental tuning
       def fractional_coef
-        10000
+        int = @time_series.first.to_i
+        power = int == 0 ? 1 : 1 - int.to_s.size
+        1000 * 10**power
       end
     end
   end

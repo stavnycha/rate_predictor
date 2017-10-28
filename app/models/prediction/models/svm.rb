@@ -10,7 +10,7 @@ class Prediction
       EPS = 0.0001
       C = 50000
       NU = 0.2
-      GAMMA = 0.0001
+      GAMMA = 0.001
 
       def initialize(time_series, prediction_count)
         @time_series = time_series

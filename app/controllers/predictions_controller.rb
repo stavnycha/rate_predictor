@@ -32,7 +32,7 @@ class PredictionsController < ApplicationController
   private
 
   def set_prediction
-    @prediction ||= Prediction.find(params[:id])
+    @prediction ||= current_user.predictions.find(params[:id])
   end
 
   def set_predictions

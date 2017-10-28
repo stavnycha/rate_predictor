@@ -7,8 +7,7 @@ html
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
 
-    = stylesheet_link_tag    '//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css'
-    = javascript_include_tag '//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js'
+    = javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js'
   body
     = render partial: 'shared/navigation'
     .container

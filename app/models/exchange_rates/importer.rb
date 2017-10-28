@@ -1,3 +1,7 @@
+#
+# ExchangeRates::Importer is responsible for
+# fetching historical rates
+#
 module ExchangeRates
   class Importer
     attr_reader :date, :base_currency

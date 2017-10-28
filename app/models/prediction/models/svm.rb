@@ -1,5 +1,5 @@
 #
-# https://machinelearningmastery.com/time-series-forecasting-supervised-learning/
+# Support vector maching, regression type
 #
 class Prediction
   module Models
@@ -73,9 +73,11 @@ class Prediction
 
       # some experimental tuning
       def fractional_coef
-        int = @time_series.first.to_i
-        power = int == 0 ? 1 : 1 - int.to_s.size
-        1000 * 10**power
+        @fractional_coef ||= begin
+          int = @time_series.first.to_i
+          power = int == 0 ? 1 : 1 - int.to_s.size
+          1000 * 10**power
+        end
       end
     end
   end

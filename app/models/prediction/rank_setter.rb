@@ -1,3 +1,7 @@
+#
+# Assignes ranks to results of prediction:
+# adds ranks to 3 weeks that offer max. profit in case of exchange
+#
 class Prediction
   class RankSetter
     attr_reader :prediction

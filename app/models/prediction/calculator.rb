@@ -1,5 +1,9 @@
 require 'libsvm'
 
+#
+# Invokes prediction model for rates forecasting and
+# stores results in database
+#
 class Prediction
   class Calculator
     attr_reader :predictor

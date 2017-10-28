@@ -50,7 +50,7 @@ function PredictionChart(container, labels, history, predicted){
       borderDash: [5, 5],
       backgroundColor: green,
       borderColor: green,
-      data: new Array(history.length).concat(predicted)
+      data: new Array(history.length).fill(null).concat(predicted)
     }]
   };
 

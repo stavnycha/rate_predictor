@@ -68,7 +68,7 @@ class Prediction
 
       # moving window
       def lag
-        [ LAG, prediction_count.size - 1 ].min
+        [ LAG, prediction_count - 1 ].min
       end
 
       # some experimental tuning

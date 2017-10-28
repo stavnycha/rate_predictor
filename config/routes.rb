@@ -1,5 +1,3 @@
-require 'sidekiq/web'
-
 Rails.application.routes.draw do
   devise_for :users
 
@@ -20,7 +18,4 @@ Rails.application.routes.draw do
       resources :predictions, only: :show
     end
   end
-
-  # temp
-  mount Sidekiq::Web => '/sidekiq'
 end
